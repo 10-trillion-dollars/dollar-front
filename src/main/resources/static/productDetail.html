@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 상세 페이지</title>
+</head>
+<body>
+<div id="productDetail">
+  <h2 id="productName"></h2>
+  <img id="productImage" src="" alt="상품 이미지" style="width: 300px;">
+  <p id="productPrice"></p>
+  <p id="productDescription"></p>
+  <p id="productStock"></p>
+  <p id="adminName"></p>
+</div>
+
+<div>
+  <label for="productQuantity">수량:</label>
+  <input type="number" id="productQuantity" value="1" min="1" style="width: 50px;">
+  <button id="addToCartBtn">장바구니에 담기</button>
+</div>
+
+<script>
+  let currentProduct = {}; // 전역 변수로 현재 상품 정보 저장
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('productId');
+    fetchProductDetail(productId).then(product => {
+      currentProduct = product; // 상품 정보를 전역 변수에 저장
+    });
+
+    document.getElementById('addToCartBtn').addEventListener('click', function () {
+      const quantity = parseInt(document.getElementById('productQuantity').value, 10);
+      addToCart(currentProduct, quantity);
+    });
+  });
+
+  function fetchProductDetail(productId) {
+    return fetch(`http://localhost:8080/products/${productId}`) // 상품 상세 정보 조회 API 엔드포인트
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(product => {
+      document.getElementById('productName').textContent = product.name;
+      document.getElementById('productImage').src = product.photo;
+      document.getElementById('productPrice').textContent = `가격: ${product.price}원`;
+      document.getElementById('productDescription').textContent = `설명: ${product.description}`;
+      document.getElementById('productStock').textContent = `재고: ${product.stock}개`;
+      document.getElementById('adminName').textContent = `관리자: ${product.adminname}`;
+      return product;
+    })
+    .catch(error => {
+      console.error('Error fetching product details:', error);
+    });
+  }
+
+  function addToCart(product, quantity) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const productIndex = cart.findIndex(item => item.productId === product.id);
+
+    if (productIndex !== -1) {
+      cart[productIndex].quantity += quantity;
+    } else {
+      cart.push({
+        name: product.name,
+        photo: product.photo,
+        price: product.price,
+        productId: product.id,
+        quantity: quantity,
+      });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert('장바구니에 상품이 추가되었습니다!');
+  }
+</script>
+</body>
+</html>

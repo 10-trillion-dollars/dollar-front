@@ -122,20 +122,22 @@
   function updateQuantity(index, change) {
     const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
     if (index >= 0 && index < cartItems.length) {
+      // 수량 변경
       cartItems[index].quantity += change;
 
+      // 수량이 1 미만이 되면 해당 상품 삭제
       if (cartItems[index].quantity < 1) {
-        // 수량이 0개가 되면 해당 상품을 장바구니에서 삭제
         cartItems.splice(index, 1);
-      } else {
-        // 변경된 장바구니 정보를 로컬 스토리지에 저장
-        localStorage.setItem('cart', JSON.stringify(cartItems));
       }
+
+      // 변경된 장바구니 정보를 로컬 스토리지에 저장
+      localStorage.setItem('cart', JSON.stringify(cartItems));
 
       // 장바구니 UI를 업데이트
       displayCartItems();
     }
   }
+
 
 </script>
 </body>

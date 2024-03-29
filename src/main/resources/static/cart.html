@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>장바구니</title>
+</head>
+<body>
+<h2>장바구니</h2>
+<div id="cartItems"></div>
+<p id="totalPrice">총 가격: 0원</p>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    displayCartItems();
+  });
+
+  function displayCartItems() {
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    let total = 0;
+    const cartItemsContainer = document.getElementById('cartItems');
+    cartItemsContainer.innerHTML = '';
+
+    cartItems.forEach(item => {
+      const itemElement = document.createElement('div');
+      itemElement.innerHTML = `
+        <img src="${item.photo}" alt="${item.name}" style="width: 100px; height: auto;">
+        <p>${item.name}</p>
+        <p>가격: ${item.price}원</p>
+        <p>수량: ${item.quantity}</p>
+        <p>합계: ${item.price * item.quantity}원</p>
+      `;
+      cartItemsContainer.appendChild(itemElement);
+
+      total += item.price * item.quantity;
+    });
+
+    document.getElementById('totalPrice').textContent = `총 가격: ${total}원`;
+  }
+</script>
+</body>
+</html>

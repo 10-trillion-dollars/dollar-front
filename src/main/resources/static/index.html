@@ -33,14 +33,14 @@
   });
 
   function fetchProducts() {
-    fetch('http://localhost:8080/products')
+    fetch('http://localhost:8083/products')
     .then(response => response.json())
     .then(products => displayProducts(products))
     .catch(error => console.error('Error:', error));
   }
 
   function fetchSearchProducts(query) {
-    fetch(`http://localhost:8080/products/search?search=${query}`)
+    fetch(`http://localhost:8083/products/search?search=${query}`)
     .then(response => response.json())
     .then(products => displayProducts(products))
     .catch(error => console.error('Error:', error));

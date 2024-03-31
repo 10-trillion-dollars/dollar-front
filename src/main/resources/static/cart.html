@@ -107,7 +107,7 @@
     console.log(orderRequest);
 
     // 서버에 주문 요청을 보내는 fetch API 호출
-    fetch('http://localhost:8080/order', {
+    fetch('http://localhost:8084/order', {
       method: 'POST',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -156,7 +156,7 @@
 
   function fetchAddresses() {
     // 주소 목록을 가져오는 서버의 엔드포인트 예시: '/api/addresses'
-    fetch('http://localhost:8080/users/address', {
+    fetch('http://localhost:8082/users/address', {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -169,6 +169,7 @@
       addresses.forEach(address => {
         // 주소 객체에서 도시, 읍/면/동, 도 정보를 조합하여 전체 주소를 생성
         const fullAddress = `${address.city} ${address.village} ${address.province}`;
+        console.log(fullAddress);
         const optionElement = document.createElement('option');
         optionElement.value = address.id;
         optionElement.textContent = fullAddress; // 전체 주소를 옵션의 텍스트로 설정

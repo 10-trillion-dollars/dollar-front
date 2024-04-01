@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>쇼핑몰 메인 페이지</title>
@@ -7,31 +7,69 @@
 <body>
 <input type="text" id="searchBox" placeholder="상품 검색...">
 <button id="searchBtn">검색</button>
-<button id="basket">장바구니</button>
-<button id="loginSignupBtn">로그인/회원가입</button>
+<button id="basket" onclick="window.location.href = 'cart.html'">장바구니</button>
+<button id="loginSignupBtn" onclick="handleLoginLogout()">로그인/회원가입</button>
 
-<div id="productList">상품 목록이 여기에 표시됩니다.</div>
+<div id="productList">
+  <div th:each="product : ${products}">
+    <div>
+      <img th:src="${product.photo}" alt="Product Image" style="width:100px;height:auto;">
+      <h3 th:text="${product.name}">Product Name</h3>
+      <p th:text="${'가격: ' + product.price + '원'}">Price</p>
+      수량: <input type="number" class="quantity" value="1" min="1" style="width: 50px;">
+      <button class="addToCart">장바구니에 담기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 오류 발생 시 메시지 표시 -->
+<div th:if="${#lists.isEmpty(products)}">
+  <p>상품 정보를 가져오는 도중 오류가 발생했습니다.</p>
+</div>
 
 <script>
+  // 페이지 로드 시 실행
   document.addEventListener('DOMContentLoaded', function() {
-
-    document.getElementById('loginSignupBtn').addEventListener('click', function() {
-      window.location.href = 'signupin.html';
-    });
-
+    // 로그인 상태 확인 및 버튼 표시
+    checkLoginStatus();
+    // 상품 정보 가져오기
     fetchProducts();
-
-    document.getElementById('searchBtn').addEventListener('click', function() {
-      const searchQuery = document.getElementById('searchBox').value;
-      fetchSearchProducts(searchQuery);
-    });
-
-    document.getElementById('basket').addEventListener('click', function() {
-      window.location.href = 'cart.html'; // 장바구니 페이지로 이동
-    });
-
   });
 
+  // 로그인 상태 확인 및 버튼 표시 함수
+  function checkLoginStatus() {
+    const token = getCookie('Authorization');
+    if (token) {
+      // 토큰이 존재하면 로그아웃 버튼으로 변경
+      document.getElementById('loginSignupBtn').innerText = '로그아웃';
+    } else {
+      // 토큰이 없으면 로그인/회원가입 버튼으로 유지
+      document.getElementById('loginSignupBtn').innerText = '로그인/회원가입';
+    }
+  }
+
+  // 쿠키에서 특정 이름의 쿠키 값을 가져오는 함수
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  // 로그인/로그아웃 버튼 클릭 시 처리 함수
+  function handleLoginLogout() {
+    const token = getCookie('Authorization');
+    if (token) {
+      // 토큰이 존재하면 로그아웃 처리
+      document.cookie = "Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // 쿠키 삭제
+      // 버튼 텍스트 변경
+      document.getElementById('loginSignupBtn').innerText = '로그인/회원가입';
+    } else {
+      // 토큰이 없으면 로그인 페이지로 이동
+      window.location.href = 'signupin.html';
+    }
+  }
+
+  // 상품 정보 가져오기 함수
   function fetchProducts() {
     fetch('http://localhost:8083/products')
     .then(response => response.json())
@@ -39,13 +77,7 @@
     .catch(error => console.error('Error:', error));
   }
 
-  function fetchSearchProducts(query) {
-    fetch(`http://localhost:8083/products/search?search=${query}`)
-    .then(response => response.json())
-    .then(products => displayProducts(products))
-    .catch(error => console.error('Error:', error));
-  }
-
+  // 상품 정보 표시 함수
   function displayProducts(products) {
     const productList = document.getElementById('productList');
     productList.innerHTML = '';
@@ -71,6 +103,7 @@
     });
   }
 
+  // 장바구니에 상품 추가 함수
   function addToCart(product, quantity) {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     const productIndex = cart.findIndex(item => item.productId === product.id);

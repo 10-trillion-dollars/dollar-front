@@ -10,8 +10,8 @@
   <button type="submit" id="searchBtn">검색</button>
 </form>
 <button id="basket" th:onclick="'window.location.href = \'' + @{/cart} + '\''">장바구니</button>
-<button id="loginSignupBtn" th:if="${!isAuthenticated}" th:onclick="'window.location.href = \'' + @{/login} + '\''">로그인/회원가입</button>
-<button id="logoutBtn" th:if="${isAuthenticated}" th:onclick="'window.location.href = \'' + @{/logout} + '\''">로그아웃</button>
+<a th:if="${!isAuthenticated}" th:href="@{/loginSignup}" class="btn btn-primary">로그인/회원가입</a>
+<a th:if="${isAuthenticated}" th:href="@{/logout}" class="btn btn-primary">로그아웃</a>
 
 <div id="productList">
   <div th:each="product : ${products}">
@@ -20,7 +20,9 @@
          th:data-product-name="${product.name}"
          th:data-product-price="${product.price}"
          th:data-product-photo="${product.photo}">
-      <img th:src="@{${product.photo}}" alt="Product Image" style="width:100px;height:auto;">
+      <a th:href="@{/products/{id}(id=${product.id})}">
+        <img th:src="@{${product.photo}}" alt="Product Image" style="width:100px;height:auto;">
+      </a>
       <h3 th:text="${product.name}">Product Name</h3>
       <p th:text="${'가격: ' + product.price + '원'}">Price</p>
       수량: <input type="number" class="quantity" value="1" min="1" style="width: 50px;">

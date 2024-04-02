@@ -5,15 +5,18 @@
   <title>쇼핑몰 메인 페이지</title>
 </head>
 <body>
-<input type="text" id="searchBox" placeholder="상품 검색...">
-<button id="searchBtn">검색</button>
-<button id="basket" onclick="window.location.href = 'cart.html'">장바구니</button>
-<button id="loginSignupBtn" onclick="handleLoginLogout()">로그인/회원가입</button>
+<form th:action="@{/}" method="get">
+  <input type="text" id="searchBox" name="search" placeholder="상품 검색..." th:value="${search}">
+  <button type="submit" id="searchBtn">검색</button>
+</form>
+<button id="basket" th:onclick="'window.location.href = \'' + @{/cart} + '\''">장바구니</button>
+<button id="loginSignupBtn" th:if="${!isAuthenticated}" th:onclick="'window.location.href = \'' + @{/login} + '\''">로그인/회원가입</button>
+<button id="logoutBtn" th:if="${isAuthenticated}" th:onclick="'window.location.href = \'' + @{/logout} + '\''">로그아웃</button>
 
 <div id="productList">
   <div th:each="product : ${products}">
     <div>
-      <img th:src="${product.photo}" alt="Product Image" style="width:100px;height:auto;">
+      <img th:src="@{${product.photo}}" alt="Product Image" style="width:100px;height:auto;">
       <h3 th:text="${product.name}">Product Name</h3>
       <p th:text="${'가격: ' + product.price + '원'}">Price</p>
       수량: <input type="number" class="quantity" value="1" min="1" style="width: 50px;">
@@ -22,124 +25,10 @@
   </div>
 </div>
 
-<!-- 오류 발생 시 메시지 표시 -->
-<div th:if="${#lists.isEmpty(products)}">
-  <p>상품 정보를 가져오는 도중 오류가 발생했습니다.</p>
+<!-- 로그인 상태가 아닐 때 오류 메시지를 표시할 수 있습니다 -->
+<div th:if="${!isAuthenticated}">
+  <p>로그인이 필요합니다.</p>
 </div>
 
-<script>
-  // 페이지 로드 시 실행
-  document.addEventListener('DOMContentLoaded', function() {
-    // 로그인 상태 확인 및 버튼 표시
-    checkLoginStatus();
-    // 상품 정보 가져오기
-    fetchProducts();
-    // 상품 조회
-    document.getElementById('searchBtn').addEventListener('click', function() {
-      const searchQuery = document.getElementById('searchBox').value;
-      fetchSearchProducts(searchQuery);
-    });
-  });
-
-  // 로그인 상태 확인 및 버튼 표시 함수
-  function checkLoginStatus() {
-    const token = getCookie('Authorization');
-    if (token) {
-      // 토큰이 존재하면 로그아웃 버튼으로 변경
-      document.getElementById('loginSignupBtn').innerText = '로그아웃';
-    } else {
-      // 토큰이 없으면 로그인/회원가입 버튼으로 유지
-      document.getElementById('loginSignupBtn').innerText = '로그인/회원가입';
-    }
-  }
-
-  // 쿠키에서 특정 이름의 쿠키 값을 가져오는 함수
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-
-  // 로그인/로그아웃 버튼 클릭 시 처리 함수
-  function handleLoginLogout() {
-    const token = getCookie('Authorization');
-    if (token) {
-      // 토큰이 존재하면 로그아웃 처리
-      document.cookie = "Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // 쿠키 삭제
-      // 버튼 텍스트 변경
-      document.getElementById('loginSignupBtn').innerText = '로그인/회원가입';
-    } else {
-      // 토큰이 없으면 로그인 페이지로 이동
-      window.location.href = 'signupin.html';
-    }
-  }
-
-  // 상품 정보 가져오기 함수
-  function fetchProducts() {
-    fetch('http://localhost:8083/products')
-    .then(response => response.json())
-    .then(products => displayProducts(products))
-    .catch(error => console.error('Error:', error));
-  }
-
-  // 상품 정보 표시 함수
-  function displayProducts(products) {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = '';
-
-    products.forEach(product => {
-      const productElement = document.createElement('div');
-      productElement.innerHTML = `
-            <div>
-                <img src="${product.photo}" alt="${product.name}" style="cursor:pointer;width:100px;height:auto;" onclick="window.location.href = 'productDetail.html?productId=${product.id}'">
-                <h3>${product.name}</h3>
-                <p>가격: ${product.price}원</p>
-                수량: <input type="number" class="quantity" value="1" min="1" style="width: 50px;">
-                <button>장바구니에 담기</button>
-            </div>
-        `;
-      productList.appendChild(productElement);
-
-      // 장바구니에 담기 버튼에 이벤트 리스너 추가
-      productElement.querySelector('button').addEventListener('click', () => {
-        const quantity = productElement.querySelector('.quantity').value;
-        addToCart(product, quantity);
-      });
-    });
-  }
-
-  function fetchSearchProducts(query) {
-    console.log(query);
-    fetch(`http://localhost:8083/products/search?search=${query}`)
-    .then(response => response.json())
-    .then(products => displayProducts(products))
-    .catch(error => console.error('Error:', error));
-  }
-
-  // 장바구니에 상품 추가 함수
-  function addToCart(product, quantity) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const productIndex = cart.findIndex(item => item.productId === product.id);
-
-    if (productIndex !== -1) {
-      // 상품이 이미 있으면, 수량만 업데이트
-      cart[productIndex].quantity += parseInt(quantity, 10);
-    } else {
-      // 상품이 장바구니에 없으면, 상품 정보와 함께 추가
-      cart.push({
-        productId: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: parseInt(quantity, 10),
-        photo: product.photo
-      });
-    }
-
-    // 변경된 장바구니 데이터를 로컬 스토리지에 저장
-    localStorage.setItem('cart', JSON.stringify(cart));
-    alert('장바구니에 상품이 추가되었습니다!');
-  }
-
-</script>
 </body>
 </html>

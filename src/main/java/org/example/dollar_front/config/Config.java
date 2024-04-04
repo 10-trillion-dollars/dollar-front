@@ -1,5 +1,7 @@
 package org.example.dollar_front.config;
 
+import feign.Feign;
+import org.example.dollar_front.interceptor.CookieForwardingInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -11,5 +13,9 @@ public class Config {
         return new RestTemplate();
     }
 
-
+    @Bean
+    public Feign.Builder feignBuilder() {
+        return Feign.builder()
+            .requestInterceptor(new CookieForwardingInterceptor());
+    }
 }

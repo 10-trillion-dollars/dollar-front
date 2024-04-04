@@ -1,5 +1,7 @@
 package org.example.dollar_front.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.dollar_front.feign.AddressServiceClient;
@@ -18,9 +20,17 @@ public class CartController {
 
     @GetMapping("/cart")
     public String showCart(Model model) {
-        List<Address> addresses = addressServiceClient.getAddresses();
-        model.addAttribute("addresses", addresses);
+        try {
+            List<Address> addresses = addressServiceClient.getAddresses();
+            model.addAttribute("addresses", addresses);
+        } catch (Exception e) {
+            // 주소를 가져오는 데 실패한 경우 빈 목록을 모델에 추가
+            model.addAttribute("addresses", new ArrayList<Address>());
+            // 실패 이유 등을 로깅하거나 예외 처리할 수도 있음
+            // logger.error("Failed to fetch addresses: " + e.getMessage());
+        }
         return "cart";
     }
+
 
 }

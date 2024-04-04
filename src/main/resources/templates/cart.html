@@ -6,24 +6,27 @@
 </head>
 <body>
 <h2>장바구니</h2>
-<div id="cartItems">
-  <!-- JavaScript를 사용하여 장바구니 항목을 동적으로 렌더링 -->
-</div>
-<form action="/placeOrder" method="post">
-  <select name="addressId" id="addressSelect">
-    <option value="">배송 주소를 선택해주세요</option>
-    <option th:each="address : ${addresses}" th:value="${address.id}" th:text="${address.fullAddress}"></option>
-  </select>
-  <!-- 장바구니 아이템 정보를 숨겨진 필드로 추가하거나, 자바 스크립트를 사용해 동적으로 폼 데이터를 구성할 수 있습니다. -->
-  <button type="submit">주문하기</button>
-</form>
+<div id="cartItems"></div>
+<select id="addressSelect">
+  <option value="">배송 주소를 선택해주세요</option>
+  <!-- 타임리프를 사용하여 서버 사이드에서 주소 목록을 렌더링 -->
+  <option th:each="address : ${addresses}"
+          th:value="${address.id}"
+          th:text="${address.city + ' ' + address.village + ' ' + address.province}"></option>
+</select>
+<p id="totalPrice">총 가격: 0원</p>
+<button id="placeOrderBtn">주문하기</button>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+
     displayCartItems();
 
-    document.getElementById('placeOrderBtn').addEventListener('click', function() {
+    document.getElementById('placeOrderBtn').addEventListener('click', function(event) {
+      event.preventDefault(); // 기본 동작 방지
       const selectedAddressId = document.getElementById('addressSelect').value;
+      console.log(selectedAddressId);
       if (selectedAddressId) {
         placeOrder(selectedAddressId);
       } else {
@@ -31,6 +34,7 @@
       }
     });
   });
+
 
   function displayCartItems() {
     const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
@@ -55,10 +59,49 @@
   }
 
   function placeOrder(addressId) {
-    // 주문 로직 구현
-    console.log('주문이 처리되었습니다. 배송 주소 ID:', addressId);
-    // 서버에 주문 정보를 전송하는 코드를 여기에 구현합니다.
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // basket을 상품 ID와 수량으로 구성
+    let basket = {};
+    cartItems.forEach(item => {
+      basket[item.productId] = item.quantity;
+    });
+
+    const orderRequest = {
+      basket: basket,
+      addressId: Number(addressId) // addressId를 숫자로 변환
+    };
+
+    console.log('Sending order:', orderRequest);
+
+    fetch('http://localhost:8084/order', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(orderRequest)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('주문 처리 실패');
+      }
+      return response.json();
+    })
+    .then(data => {
+      alert('주문이 완료되었습니다.');
+      localStorage.removeItem('cart'); // 주문 완료 후 장바구니 비우기
+      window.location.href = 'orderComplete.html'; // 주문 완료 페이지로 리다이렉션
+    })
+    .catch(error => {
+      console.error('Order error:', error);
+      alert('주문 처리 중 오류가 발생했습니다.');
+    });
   }
+
+
+
+
 </script>
 </body>
 </html>

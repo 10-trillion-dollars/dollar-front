@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
+#CI
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -41,3 +41,16 @@ jobs:
       - name: docker Hub push
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/front
         
+#CD
+
+      - name: Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            docker compose down
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/front
+            docker compose up

@@ -8,11 +8,17 @@
 <body>
 <h1>프로필 조회</h1>
 <div>
-  <label for="email">이메일:</label>
+  <label for="email">이메일 :</label>
   <p id="email"></p>
+  <button onclick="changeEmail()">이메일 변경</button>
 </div>
 <div>
-  <label for="role">역할:</label>
+  <label for="password">패스워드 :</label>
+  <p id="password">******</p>
+  <button onclick="changePassword()">패스워드 변경</button>
+</div>
+<div>
+  <label for="role">역할 :</label>
   <p id="role"></p>
 </div>
 
@@ -39,6 +45,66 @@
     .catch(error => {
       console.error('Error:', error);
     });
+  }
+
+  function changeEmail() {
+    const newEmail = prompt('새로운 이메일을 입력하세요:');
+    if (newEmail) {
+      fetch('http://localhost:8080/users/change-email', {
+        method: 'POST',
+        credentials: 'include', // 쿠키 포함
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: newEmail })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('이메일 변경에 실패했습니다.');
+        }
+        alert('이메일이 성공적으로 변경되었습니다.');
+        // 변경된 이메일을 화면에 업데이트합니다.
+        document.getElementById('email').textContent = newEmail;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  }
+
+  function changePassword() {
+    const currentPassword = prompt('기존 패스워드를 입력하세요:');
+    if (currentPassword) {
+      const newPassword = prompt('새로운 패스워드를 입력하세요:');
+      if (newPassword) {
+        const confirmPassword = prompt('새로운 패스워드를 다시 입력하세요:');
+        if (newPassword === confirmPassword) {
+          fetch('http://localhost:8080/users/password', {
+            method: 'PUT',
+            credentials: 'include', // 쿠키 포함
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              password: currentPassword,
+              changePassword: newPassword,
+              changePasswordCheck: confirmPassword
+            })
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('패스워드 변경에 실패했습니다.');
+            }
+            alert('패스워드가 성공적으로 변경되었습니다.');
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        } else {
+          alert('새로운 패스워드가 일치하지 않습니다. 다시 시도해주세요.');
+        }
+      }
+    }
   }
 
   // 페이지가 로드될 때 프로필을 조회하도록 호출합니다.

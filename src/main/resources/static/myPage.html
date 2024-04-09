@@ -10,7 +10,11 @@
 <div>
   <label for="email">이메일 :</label>
   <p id="email"></p>
-  <button onclick="changeEmail()">이메일 변경</button>
+</div>
+<div>
+  <label for="username">유저 이름 :</label>
+  <p id="username"></p>
+  <button onclick="changeUsername()">유저이름 변경</button>
 </div>
 <div>
   <label for="password">패스워드 :</label>
@@ -47,24 +51,24 @@
     });
   }
 
-  function changeEmail() {
-    const newEmail = prompt('새로운 이메일을 입력하세요:');
-    if (newEmail) {
-      fetch('http://localhost:8080/users/change-email', {
+  function changeUsername() {
+    const newUsername = prompt('새로운 유저이름을 입력하세요:');
+    if (newUsername) {
+      fetch('http://localhost:8080/users/username', {
         method: 'POST',
         credentials: 'include', // 쿠키 포함
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email: newEmail })
+        body: JSON.stringify({ username: newUsername })
       })
       .then(response => {
         if (!response.ok) {
-          throw new Error('이메일 변경에 실패했습니다.');
+          throw new Error('유저이름 변경에 실패했습니다.');
         }
-        alert('이메일이 성공적으로 변경되었습니다.');
+        alert('유저이름이 성공적으로 변경되었습니다.');
         // 변경된 이메일을 화면에 업데이트합니다.
-        document.getElementById('email').textContent = newEmail;
+        document.getElementById('username').textContent = newUsername;
       })
       .catch(error => {
         console.error('Error:', error);

@@ -81,7 +81,15 @@
 
 
   function fetchProducts() {
-    fetch('http://localhost:8082/products')
+    fetch('http://localhost:8082/products',{
+      method: 'GET',
+      headers: {
+        'Origin': 'http://localhost:8081', // 요청이 온 출처
+        'Access-Control-Allow-Origin': 'http://localhost:8081', // 서버가 허용하는 출처
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE', // 서버가 허용하는 메소드
+        'Access-Control-Allow-Headers': '*', // 서버가 허용하는 헤더
+      }
+    })
     .then(response => response.json())
     .then(products => displayProducts(products))
     .catch(error => console.error('Error:', error));

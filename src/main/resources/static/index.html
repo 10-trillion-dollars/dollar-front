@@ -81,7 +81,7 @@
 
 
   function fetchProducts() {
-    fetch('http://localhost:8080/products')
+    fetch('http://localhost:8082/products')
     .then(response => response.json())
     .then(products => displayProducts(products))
     .catch(error => console.error('Error:', error));

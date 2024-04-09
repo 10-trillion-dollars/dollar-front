@@ -65,25 +65,6 @@
     document.getElementById('totalPrice').textContent = `총 가격: ${total}원`;
   }
 
-  // function checkLoginStatus() {
-  //   return fetch('/api/check-login', {
-  //     method: 'GET',
-  //     credentials: 'include' // 쿠키를 포함시키기 위해 필요
-  //   })
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       throw new Error('로그인 상태 확인 실패');
-  //     }
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     return data.isLoggedIn; // 로그인 상태 반환 (예시: { isLoggedIn: true })
-  //   })
-  //   .catch(error => {
-  //     console.error('Error:', error);
-  //     return false;
-  //   });
-  // }
 
   function checkTokenExists() {
     const cookies = document.cookie.split(';');
@@ -107,7 +88,7 @@
     console.log(orderRequest);
 
     // 서버에 주문 요청을 보내는 fetch API 호출
-    fetch('http://localhost:8084/order', {
+    fetch('http://localhost:8080/order', {
       method: 'POST',
       credentials: 'include', // 쿠키 포함
       headers: {

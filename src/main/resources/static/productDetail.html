@@ -7,8 +7,8 @@
 <body>
 <div id="nav-container"></div>
 <div id="productDetail">
-  <h2 id="productName"></h2>
   <img id="productImage" src="" alt="상품 이미지" style="width: 300px;">
+  <h2 id="productName"></h2>
   <p id="productPrice"></p>
   <p id="productDescription"></p>
   <p id="productStock"></p>
@@ -52,8 +52,10 @@
       return response.json();
     })
     .then(product => {
+      console.log(product);
+
       document.getElementById('productName').textContent = product.name;
-      document.getElementById('productImage').src = product.photo;
+      document.getElementById('productImage').src = product.imageUrl;
       document.getElementById('productPrice').textContent = `가격: ${product.price}원`;
       document.getElementById('productDescription').textContent = `설명: ${product.description}`;
       document.getElementById('productStock').textContent = `재고: ${product.stock}개`;
@@ -122,7 +124,7 @@
   }
 
   function addToCart(product, quantity) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
     const productIndex = cart.findIndex(item => item.productId === product.id);
 
     if (productIndex !== -1) {
@@ -137,7 +139,7 @@
       });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    sessionStorage.setItem('cart', JSON.stringify(cart));
     alert('장바구니에 상품이 추가되었습니다!');
   }
 </script>

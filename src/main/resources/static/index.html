@@ -6,81 +6,12 @@
 </head>
 <body>
 <div id="nav-container"></div>
-<input type="text" id="searchBox" placeholder="상품 검색...">
-<button id="searchBtn">검색</button>
-<button id="basket">장바구니</button>
-<button id="loginSignupBtn">로그인/회원가입</button>
-<button id="adminDashboard">관리자 페이지</button>
-
-<div id="authButtons">
-  <!-- 여기에 로그인/회원가입 버튼 또는 마이페이지와 로그아웃 버튼이 동적으로 추가됩니다. -->
-</div>
-
+<!--<button id="adminDashboard">관리자 페이지</button>-->
 <div id="productList">상품 목록이 여기에 표시됩니다.</div>
-
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('loginSignupBtn').addEventListener('click', function() {
-      window.location.href = 'loginSignup.html';
-    });
-
-
-    fetchProducts();
-
-    // document.getElementById('loginSignupBtn').addEventListener('click', function() {
-    //   window.location.href = 'loginSignup.html';
-    // });
-
-    document.getElementById('searchBtn').addEventListener('click', function() {
-      const searchQuery = document.getElementById('searchBox').value;
-      fetchSearchProducts(searchQuery);
-    });
-
-    document.getElementById('basket').addEventListener('click', function() {
-      window.location.href = 'cart.html'; // 장바구니 페이지로 이동
-    });
-    document.getElementById('adminDashboard').addEventListener('click', function() {
-      window.location.href = 'adminDashboard.html'; // 장바구니 페이지로 이동
-    });
-
-    checkToken();
-
-  });
-
-  function checkToken() {
-    const token = getTokenFromCookie();
-    const authButtons = document.getElementById('authButtons');
-
-    if (token) {
-      // 토큰이 있을 경우
-      authButtons.innerHTML = `
-      <button id="myPage">마이페이지</button>
-      <button id="orderPage">주문내역</button>
-      <button id="logout">로그아웃</button>
-    `;
-      document.getElementById('myPage').addEventListener('click', function() {
-        window.location.href = 'myPage.html';
-      });
-      document.getElementById('orderPage').addEventListener('click', function() {
-        window.location.href = 'orderComplete.html';
-      });
-      document.getElementById('logout').addEventListener('click', function() {
-        // 로그아웃 처리 및 토큰 삭제
-        document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        alert('로그아웃 되었습니다.');
-        window.location.reload();
-      });
-    } else {
-      // 토큰이 없을 경우
-      authButtons.innerHTML = `
-      <button id="loginSignupBtn">로그인/회원가입</button>
-    `;
-      document.getElementById('loginSignupBtn').addEventListener('click', function() {
-        window.location.href = 'loginSignup.html';
-      });
-    }
-  }
-
+     fetchProducts();
+   });
 
   function getTokenFromCookie() {
     const cookies = document.cookie.split(';');
@@ -93,8 +24,6 @@
     }
     return null;
   }
-
-
   function fetchProducts() {
     fetch('http://localhost:8080/products',{
       method: 'GET'
@@ -120,13 +49,6 @@
     });
   }
 
-
-  function fetchSearchProducts(query) {
-    fetch(`http://localhost:8080/products/search?search=${query}`)
-    .then(response => response.json())
-    .then(products => displayProducts(products))
-    .catch(error => console.error('Error:', error));
-  }
 
   function displayProducts(products) {
     const productList = document.getElementById('productList');

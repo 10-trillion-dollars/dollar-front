@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>쇼핑몰 헤더</title>
-<!--  <link rel="stylesheet" href="/css/common.css">-->
+  <!--  <link rel="stylesheet" href="/css/common.css">-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <link rel="stylesheet" href="/css/common.css">
 </head>
@@ -13,7 +13,7 @@
     <div class="logo">
       <a href="/">
         <div>
-        <img src="/images/logo.gif" alt="쇼핑몰 로고">
+          <img src="/images/logo.gif" alt="쇼핑몰 로고">
           <h5>tentrilliondollars</h5>
         </div>
       </a>
@@ -28,17 +28,16 @@
       </ul>
     </nav>
     <div class="search">
-      <input type="text" placeholder="Search...">
-      <button type="submit">Search</button>
+      <input type="text" id="searchBox" placeholder="상품 검색...">
+      <button id="searchBtn">검색</button>
     </div>
     <div class="icons">
-      <a href="/cart">
-        <i class="fas fa-shopping-cart"></i>
+        <i id="basket" class="fas fa-shopping-cart"></i>
         <span class="cart-count">0</span>
-      </a>
-      <a href="/login">
-        <i class="fas fa-user"></i>
-      </a>
+        <i id="myPage" class="fas fa-user"></i>
+    </div>
+    <div id="authButtons">
+      <!-- 로그인/회원가입 또는 마이페이지와 로그아웃 버튼이 동적으로 추가될 곳 -->
     </div>
   </div>
 </header>

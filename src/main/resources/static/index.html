@@ -8,17 +8,31 @@
 <input type="text" id="searchBox" placeholder="상품 검색...">
 <button id="searchBtn">검색</button>
 <button id="basket">장바구니</button>
+<<<<<<< HEAD
 <button id="loginSignupBtn">로그인/회원가입</button>
 <button id="adminDashboard">관리자 페이지</button>
+=======
+<div id="authButtons">
+  <!-- 여기에 로그인/회원가입 버튼 또는 마이페이지와 로그아웃 버튼이 동적으로 추가됩니다. -->
+</div>
+
+>>>>>>> 1834fa96f6fa510f75b7189d56e930837ccec3f0
 <div id="productList">상품 목록이 여기에 표시됩니다.</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
     document.getElementById('loginSignupBtn').addEventListener('click', function() {
       window.location.href = 'loginSignup.html';
     });
+=======
+>>>>>>> 1834fa96f6fa510f75b7189d56e930837ccec3f0
 
     fetchProducts();
+
+    // document.getElementById('loginSignupBtn').addEventListener('click', function() {
+    //   window.location.href = 'loginSignup.html';
+    // });
 
     document.getElementById('searchBtn').addEventListener('click', function() {
       const searchQuery = document.getElementById('searchBox').value;
@@ -32,17 +46,65 @@
       window.location.href = 'adminDashboard.html'; // 장바구니 페이지로 이동
     });
 
+    checkToken();
+
   });
 
+  function checkToken() {
+    const token = getTokenFromCookie();
+    const authButtons = document.getElementById('authButtons');
+
+    if (token) {
+      // 토큰이 있을 경우
+      authButtons.innerHTML = `
+      <button id="myPage">마이페이지</button>
+      <button id="logout">로그아웃</button>
+    `;
+      document.getElementById('myPage').addEventListener('click', function() {
+        window.location.href = 'myPage.html';
+      });
+      document.getElementById('logout').addEventListener('click', function() {
+        // 로그아웃 처리 및 토큰 삭제
+        document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        alert('로그아웃 되었습니다.');
+        window.location.reload();
+      });
+    } else {
+      // 토큰이 없을 경우
+      authButtons.innerHTML = `
+      <button id="loginSignupBtn">로그인/회원가입</button>
+    `;
+      document.getElementById('loginSignupBtn').addEventListener('click', function() {
+        window.location.href = 'loginSignup.html';
+      });
+    }
+  }
+
+
+  function getTokenFromCookie() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const parts = cookie.split('=');
+      const name = parts[0].trim();
+      if (name === 'Authorization') {
+        return parts[1];
+      }
+    }
+    return null;
+  }
+
+
   function fetchProducts() {
-    fetch('http://localhost:8083/products')
+    fetch('https://product.10-trillon-dollars.com/products',{
+      method: 'GET'
+    })
     .then(response => response.json())
     .then(products => displayProducts(products))
     .catch(error => console.error('Error:', error));
   }
 
   function fetchSearchProducts(query) {
-    fetch(`http://localhost:8083/products/search?search=${query}`)
+    fetch(`http://localhost:8080/products/search?search=${query}`)
     .then(response => response.json())
     .then(products => displayProducts(products))
     .catch(error => console.error('Error:', error));

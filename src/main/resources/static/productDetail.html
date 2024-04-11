@@ -2,101 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>주문 내역</title>
-  <style>
-    .orderDetail {
-      display: none; /* 기본적으로 숨김 */
-    }
-  </style>
+  <title>상품 상세 페이지</title>
 </head>
 <body>
-<h2>주문 내역</h2>
-<div id="orderList"></div>
+<div id="productDetail">
+  <h2 id="productName"></h2>
+  <img id="productImage" src="" alt="상품 이미지" style="width: 300px;">
+  <p id="productPrice"></p>
+  <p id="productDescription"></p>
+  <p id="productStock"></p>
+  <p id="adminName"></p>
+</div>
+
+<div>
+  <label for="productQuantity">수량:</label>
+  <input type="number" id="productQuantity" value="1" min="1" style="width: 50px;">
+  <button id="addToCartBtn">장바구니에 담기</button>
+</div>
+
+<div id="reviewSection">
+  <h2>상품 리뷰</h2>
+  <ul id="reviewList"></ul>
+</div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    fetchOrderList(); // 주문 목록을 가져오는 함수 호출
+  let currentProduct = {}; // 전역 변수로 현재 상품 정보 저장
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('productId');
+    fetchProductDetail(productId).then(product => {
+      currentProduct = product; // 상품 정보를 전역 변수에 저장
+      fetchReviews(productId); // 상품 리뷰를 가져옴
+    });
+
+    document.getElementById('addToCartBtn').addEventListener('click', function () {
+      const quantity = parseInt(document.getElementById('productQuantity').value, 10);
+      addToCart(currentProduct, quantity);
+    });
   });
 
-  function fetchOrderList() {
-    fetch('http://localhost:8084/order/userorder', {
-      method: 'GET',
-      credentials: 'include', // 쿠키 포함
-      headers: {
-        'Content-Type': 'application/json'
+  function fetchProductDetail(productId) {
+    return fetch(`http://localhost:8080/products/${productId}`) // 상품 상세 정보 조회 API 엔드포인트
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
+      return response.json();
     })
-    .then(response => response.json())
-    .then(orderList => {
-      const orderListContainer = document.getElementById('orderList');
-      orderList.forEach(order => {
-        const orderElement = document.createElement('div');
-        orderElement.innerHTML = `
-            <p>주문 ID: <span class="orderId" data-orderId="${order.orderId}">${order.orderId}</span></p>
-            <p>주문 상태: ${order.state}</p>
-            <p>배송 주소: ${order.address}</p>
-            <button class="showDetailBtn" data-orderId="${order.orderId}">상세보기</button> <!-- 상세보기 버튼 추가 -->
-            <div class="orderDetail" id="orderDetail_${order.orderId}"> <!-- 상세 내용을 감싸는 div -->
-              <!-- 여기에 상세 내용이 들어갈 부분 -->
-            </div>
-            <hr>
-          `;
-        orderListContainer.appendChild(orderElement);
+    .then(product => {
+      document.getElementById('productName').textContent = product.name;
+      document.getElementById('productImage').src = product.photo;
+      document.getElementById('productPrice').textContent = `가격: ${product.price}원`;
+      document.getElementById('productDescription').textContent = `설명: ${product.description}`;
+      document.getElementById('productStock').textContent = `재고: ${product.stock}개`;
+      document.getElementById('adminName').textContent = `관리자: ${product.adminname}`;
+      return product;
+    })
+    .catch(error => {
+      console.error('Error fetching product details:', error);
+    });
+  }
+
+  function fetchReviews(productId) {
+    fetch(`http://localhost:8080/products/${productId}/reviews`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(reviews => {
+      const reviewList = document.getElementById('reviewList');
+      reviewList.innerHTML = ''; // 이전에 추가된 리뷰를 모두 지움
+
+      let totalScore = 0; // 전체 평점의 합을 저장할 변수
+      let averageScore = 0; // 평균 평점을 계산할 변수
+
+      reviews.forEach(review => {
+        const listItem = document.createElement('li');
+        // 리뷰 항목을 생성하고 내용을 추가합니다.
+        const contentDiv = document.createElement('div');
+        const photoImg = document.createElement('img');
+        const scoreSpan = document.createElement('span');
+        const contentSpan = document.createElement('span');
+
+        photoImg.src = review.photo;
+        photoImg.alt = '리뷰 사진';
+        photoImg.style.width = '100px'; // 이미지 크기 조정
+        contentDiv.appendChild(photoImg);
+        contentDiv.appendChild(document.createElement('br')); // 줄바꿈
+
+        scoreSpan.textContent = `점수: ${review.score}`;
+        totalScore += review.score; // 리뷰의 점수를 더합니다.
+        contentDiv.appendChild(scoreSpan);
+        contentDiv.appendChild(document.createElement('br')); // 줄바꿈
+
+        contentSpan.textContent = review.content;
+        contentDiv.appendChild(contentSpan);
+
+        listItem.appendChild(contentDiv);
+        reviewList.appendChild(listItem);
       });
+
+      // 평균 평점 계산
+      if (reviews.length > 0) {
+        averageScore = totalScore / reviews.length;
+        const averageScoreP = document.createElement('p');
+        averageScoreP.textContent = `평균 평점: ${averageScore.toFixed(2)}`; // 소수점 둘째 자리까지 표시
+        reviewList.parentNode.insertBefore(averageScoreP, reviewList); // 리뷰 목록 앞에 추가
+      }
     })
-    .catch(error => console.error('Error fetching order list:', error));
+
+
+    .catch(error => {
+      console.error('Error fetching reviews:', error);
+    });
   }
 
-  document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('showDetailBtn')) {
-      const orderId = event.target.getAttribute('data-orderId');
-      const orderDetail = document.getElementById(`orderDetail_${orderId}`);
-      toggleOrderDetail(orderDetail, orderId);
-    }
-  });
+  function addToCart(product, quantity) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const productIndex = cart.findIndex(item => item.productId === product.id);
 
-  function toggleOrderDetail(orderDetail, orderId) {
-    if (orderDetail.style.display === 'none') {
-      fetchOrderDetail(orderId, orderDetail);
-      orderDetail.style.display = 'block';
+    if (productIndex !== -1) {
+      cart[productIndex].quantity += quantity;
     } else {
-      orderDetail.style.display = 'none';
+      cart.push({
+        name: product.name,
+        photo: product.photo,
+        price: product.price,
+        productId: product.id,
+        quantity: quantity,
+      });
     }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert('장바구니에 상품이 추가되었습니다!');
   }
-
-  function fetchOrderDetail(orderId, orderDetail) {
-    // 주문 상세 정보를 가져오는 fetch 호출
-    fetch(`http://localhost:8084/order/${orderId}`, {
-      method: 'GET',
-      credentials: 'include', // 쿠키 포함
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(orderDetailData => {
-      if (orderDetailData && orderDetailData.length > 0) {
-        let productDetails = '';
-        orderDetailData.forEach(product => {
-          productDetails += `
-          <p>상품 ID: ${product.productId}</p>
-          <p>상품 이름: ${product.productName}</p>
-          <p>수량: ${product.quantity}</p>
-          <p>주문 상태: ${product.state}</p>
-          <hr>
-        `;
-        });
-        orderDetail.innerHTML = productDetails;
-      } else {
-        orderDetail.innerHTML = '<p>주문 상세 정보를 가져올 수 없습니다.</p>';
-      }
-    })
-    .catch(error => console.error(`Error fetching order detail for orderId ${orderId}:`, error));
-  }
-
-
-
-
 </script>
 </body>
 </html>

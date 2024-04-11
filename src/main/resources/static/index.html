@@ -8,14 +8,25 @@
 <input type="text" id="searchBox" placeholder="상품 검색...">
 <button id="searchBtn">검색</button>
 <button id="basket">장바구니</button>
+<<<<<<< HEAD
+<button id="loginSignupBtn">로그인/회원가입</button>
+<button id="adminDashboard">관리자 페이지</button>
+=======
 <div id="authButtons">
   <!-- 여기에 로그인/회원가입 버튼 또는 마이페이지와 로그아웃 버튼이 동적으로 추가됩니다. -->
 </div>
 
+>>>>>>> 1834fa96f6fa510f75b7189d56e930837ccec3f0
 <div id="productList">상품 목록이 여기에 표시됩니다.</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
+    document.getElementById('loginSignupBtn').addEventListener('click', function() {
+      window.location.href = 'loginSignup.html';
+    });
+=======
+>>>>>>> 1834fa96f6fa510f75b7189d56e930837ccec3f0
 
     fetchProducts();
 
@@ -30,6 +41,9 @@
 
     document.getElementById('basket').addEventListener('click', function() {
       window.location.href = 'cart.html'; // 장바구니 페이지로 이동
+    });
+    document.getElementById('adminDashboard').addEventListener('click', function() {
+      window.location.href = 'adminDashboard.html'; // 장바구니 페이지로 이동
     });
 
     checkToken();

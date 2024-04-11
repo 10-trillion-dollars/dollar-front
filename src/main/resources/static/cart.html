@@ -41,7 +41,7 @@
 
 
   function displayCartItems() {
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
     let total = 0;
     const cartItemsContainer = document.getElementById('cartItems');
     cartItemsContainer.innerHTML = '';
@@ -72,7 +72,7 @@
   }
 
   function placeOrder(addressId) {
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
     // 장바구니 아이템을 basket 형태로 변환
     let basket = {};
     cartItems.forEach(item => {
@@ -107,7 +107,7 @@
 
       alert('주문이 생성 되었습니다 주문 내역에서 결제를 부탁드립니다..');
       // 주문 완료 후 로컬 스토리지에서 장바구니 정보 삭제
-      localStorage.removeItem('cart');
+      sessionStorage.removeItem('cart');
       // 주문 완료 페이지나 메인 페이지로 리다이렉션
       window.location.href = 'orderComplete.html'; // 이 부분은 적절한 주문 완료 페이지로 변경해주세요.
     })

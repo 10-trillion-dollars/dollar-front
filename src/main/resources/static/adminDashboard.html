@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Product Management</title>
+</head>
+<body>
+<h1>Admin Product Management</h1>
+
+<h2>Create Product</h2>
+<form id="createProductForm">
+  <label for="name">Name:</label>
+  <input type="text" id="name" required><br>
+
+  <label for="description">Description:</label>
+  <textarea id="description" required></textarea><br>
+
+  <label for="price">Price:</label>
+  <input type="number" id="price" step="0.01" required><br>
+
+  <label for="stock">Stock:</label>
+  <input type="number" id="stock" required><br>
+
+  <button type="submit">Create Product</button>
+</form>
+
+<h2>Product List</h2>
+<table id="productTable">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Price</th>
+    <th>Stock</th>
+    <th>Order Details</th>
+    <th>Actions</th>
+    <th>reviews</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- Product rows will be dynamically added here -->
+  </tbody>
+</table>
+<script>
+  const apiBaseUrl = 'http://localhost:8080/admin/products';
+
+  async function fetchProducts(page = 0, size = 10) {
+    fetch(`${apiBaseUrl}?page=${page}&size=${size}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(async products => {
+      const tableBody = document.querySelector('#productTable tbody');
+      tableBody.innerHTML = '';
+
+      for (const product of products) {
+        const row = document.createElement('tr');
+        const orderDetailsSelectId = `orderDetailsSelect${product.id}`;
+        const newStateSelectId = `newOrderState${product.id}`;
+        const reviewsHtml = await getReview(product.id);
+        row.innerHTML = `
+        <td>${product.id}</td>
+        <td>${product.name}</td>
+        <td>${product.price}</td>
+        <td>${product.stock}</td>
+        <td>
+          <div>
+            <select id="${orderDetailsSelectId}">
+              <option>Select Order Detail</option>
+              ${product.orderDetails.map(orderDetail => `
+                <option value="${orderDetail.orderId}">Order ID: ${orderDetail.orderId}, Quantity: ${orderDetail.quantity}, State: ${orderDetail.orderState}</option>
+              `).join('')}
+            </select>
+            <select id="${newStateSelectId}">
+              <option value="0">Preparing</option>
+              <option value="1">Shipping</option>
+              <option value="2">Delivered</option>
+              <option value="3">Not Payed</option>
+            </select>
+            <button onclick="changeSelectedOrderState('${orderDetailsSelectId}', '${newStateSelectId}',${product.id})">Change State</button>
+          </div>
+        </td>
+        <td>
+          <button onclick="updateProduct(${product.id})">Update</button>
+          <button onclick="deleteProduct(${product.id})">Delete</button>
+        </td>
+        <td>
+          ${reviewsHtml}
+        </td>
+      `;
+        tableBody.appendChild(row);
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  async function getReview(productId) {
+    const response = await fetch(`http://localhost:8080/products/${productId}/reviews`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const reviews = await response.json();
+
+    // 여기서 리뷰 데이터를 HTML 형태로 변환합니다.
+    // 예를 들어, 각 리뷰에 대해 간단한 요약을 HTML 문자열로 만듭니다.
+    let reviewsHtml = '<ul>';
+    for (const review of reviews) {
+      reviewsHtml += `<li>${review.content},${review.score}</li>`;
+    }
+    reviewsHtml += '</ul>';
+
+    return reviewsHtml; // 변환된 HTML 문자열을 반환합니다.
+  }
+
+  // 상태 변경 메서드
+  function changeSelectedOrderState(orderDetailsSelectId, newStateSelectId, productId) {
+    const orderId = document.getElementById(orderDetailsSelectId).value;
+    const newState = document.getElementById(newStateSelectId).value;
+    changeOrderState(orderId, newState);
+  }
+
+  // Function to create a new product
+  function createProduct(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const description = document.getElementById('description').value;
+    const price = document.getElementById('price').value;
+    const stock = document.getElementById('stock').value;
+
+    const productData = {
+      name: name,
+      description: description,
+      price: price,
+      stock: stock,
+      state: true // 상품 상태 추가
+    };
+
+    fetch(apiBaseUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(productData)
+    })
+    .then(response => response.text())
+    .then(data => {
+      alert(data);
+      fetchProducts();
+      document.getElementById('createProductForm').reset();
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  // Function to update a product
+  function updateProduct(productId) {
+    const updatedName = prompt('Enter updated name:');
+    const updatedPrice = prompt('Enter updated price:');
+    const updatedStock = prompt('Enter updated stock:');
+
+    const updatedProductData = {
+      name: updatedName,
+      price: updatedPrice,
+      stock: updatedStock
+    };
+
+    fetch(`${apiBaseUrl}/${productId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedProductData)
+    })
+    .then(response => response.text())
+    .then(data => {
+      alert(data);
+      fetchProducts();
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  // Function to delete a product
+  function deleteProduct(productId) {
+    fetch(`${apiBaseUrl}/${productId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.text())
+    .then(data => {
+      alert(data);
+      fetchProducts();
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  // 주문 상태 변경 함수
+  function changeOrderState(orderId, newState) {
+    fetch(`http://localhost:8080/admin/order/${orderId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({stateNum: newState})
+    })
+    .then(response => response.text())
+    .then(data => {
+      alert(data);
+      console.log(orderId, newState)
+      fetchProducts(); // 주문 상태 변경 후 상품 목록을 다시 불러옵니다.
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  // Event listener for create product form submission
+  document.getElementById('createProductForm').addEventListener('submit', createProduct);
+
+  // Fetch products on page load
+  fetchProducts();
+</script>
+</body>
+</html>

@@ -9,13 +9,13 @@
 <button id="searchBtn">검색</button>
 <button id="basket">장바구니</button>
 <button id="loginSignupBtn">로그인/회원가입</button>
-
+<button id="adminDashboard">관리자 페이지</button>
 <div id="productList">상품 목록이 여기에 표시됩니다.</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('loginSignupBtn').addEventListener('click', function() {
-      window.location.href = 'user.html';
+      window.location.href = 'loginSignup.html';
     });
 
     fetchProducts();
@@ -27,6 +27,9 @@
 
     document.getElementById('basket').addEventListener('click', function() {
       window.location.href = 'cart.html'; // 장바구니 페이지로 이동
+    });
+    document.getElementById('adminDashboard').addEventListener('click', function() {
+      window.location.href = 'adminDashboard.html'; // 장바구니 페이지로 이동
     });
 
   });

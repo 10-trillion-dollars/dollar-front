@@ -3,35 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <title>상품 상세 페이지</title>
+  <link rel="stylesheet" href="/css/productDetail.css">
 </head>
 <body>
+<div id="nav-container"></div>
 <div id="productDetail">
-  <img id="productImage" src="" alt="상품 이미지" style="width: 300px;">
+  <div class="productDetailImage">
+    <img id="productImage" src="/images/TIL.jpeg" alt="상품 이미지">
+  </div>
+<!--  <img id="productImage" src="" alt="상품 이미지" style="width: 300px;">-->
+  <div class="productDetailItem">
   <h2 id="productName"></h2>
   <p id="productPrice"></p>
   <p id="productDescription"></p>
   <p id="productStock"></p>
   <p id="adminName"></p>
+  </div>
 </div>
-
-<div>
+<div class="productDetail-wrap">
+<div class="productDetail-addCart">
   <label for="productQuantity">수량:</label>
   <input type="number" id="productQuantity" value="1" min="1" style="width: 50px;">
   <button id="addToCartBtn">장바구니에 담기</button>
 </div>
 
-<div id="reviewSection">
-  <h2>상품 리뷰</h2>
-  <ul id="reviewList"></ul>
+  <div id="reviewSection">
+    <h2>상품 리뷰</h2>
+    <div class="reviewForm">
+      <form id="reviewForm">
+        <div class="formGroup">
+          <label for="reviewContent">리뷰 내용:</label>
+          <textarea id="reviewContent" rows="4" required></textarea>
+        </div>
+        <div class="formGroup">
+          <label for="reviewScore">평점:</label>
+          <select id="reviewScore" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <button type="submit">리뷰 작성</button>
+      </form>
+    </div>
+    <ul id="reviewList"></ul>
+  </div>
 </div>
-
+</div>
 <script>
   let currentProduct = {}; // 전역 변수로 현재 상품 정보 저장
-
+  let productNumber;
   document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('productId');
     fetchProductDetail(productId).then(product => {
+      productNumber = productId;
       currentProduct = product; // 상품 정보를 전역 변수에 저장
       fetchReviews(productId); // 상품 리뷰를 가져옴
     });
@@ -53,8 +81,8 @@
     .then(product => {
       console.log(product);
 
-      document.getElementById('productName').textContent = product.name;
-      document.getElementById('productImage').src = product.imageUrl;
+      document.getElementById('productName').textContent = `상품명: ${product.name}`;
+      // document.getElementById('productImage').src = product.imageUrl;
       document.getElementById('productPrice').textContent = `가격: ${product.price}원`;
       document.getElementById('productDescription').textContent = `설명: ${product.description}`;
       document.getElementById('productStock').textContent = `재고: ${product.stock}개`;
@@ -65,7 +93,41 @@
       console.error('Error fetching product details:', error);
     });
   }
+  document.getElementById('reviewForm').addEventListener('submit', function (event) {
+    event.preventDefault();
 
+    const reviewContent = document.getElementById('reviewContent').value;
+    const reviewScore = parseInt(document.getElementById('reviewScore').value, 10);
+
+    const reviewData = {
+      content: reviewContent,
+      score: reviewScore
+    };
+
+    const token = getTokenFromCookie();
+    fetch(`http://localhost:8080/products/${productNumber}/reviews`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // 토큰을 헤더에 포함
+      },
+      body: JSON.stringify(reviewData)
+    })
+    .then(response => {
+      if (response.ok) {
+        alert('리뷰가 성공적으로 등록되었습니다.');
+        fetchReviews(productId); // 리뷰 목록을 다시 불러옴
+        document.getElementById('reviewForm').reset(); // 폼 초기화
+      } else {
+        alert('리뷰 등록에 실패했습니다.');
+      }
+    })
+    .catch(error => {
+      console.error('Error submitting review:', error);
+      alert('리뷰 등록 중 오류가 발생했습니다.');
+    });
+  });
   function fetchReviews(productId) {
     fetch(`http://localhost:8080/products/${productId}/reviews`)
     .then(response => {
@@ -141,6 +203,8 @@
     sessionStorage.setItem('cart', JSON.stringify(cart));
     alert('장바구니에 상품이 추가되었습니다!');
   }
+
 </script>
+<script src="/js/common.js"></script>
 </body>
 </html>

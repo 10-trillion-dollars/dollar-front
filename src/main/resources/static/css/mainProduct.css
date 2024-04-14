@@ -1,0 +1,107 @@
+/*메인화면 상품 전체 조회 wrap*/
+#productList {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  grid-gap: 20px;
+  padding: 20px;
+  background-color: #ffffff;
+}
+/*메인화면 상품 전체 조회 2차 박스*/
+.mainProductPage {
+  text-align: center;
+  width: 100%;
+  border: 1px solid;
+  margin: auto;
+  aspect-ratio: 1 / 1; /* 가로 세로 비율을 1:1로 설정 */
+  display: flex;
+  flex-direction: column;
+}
+.mainProductPage-imageBox{
+  width:100%;
+  flex:7;
+}
+.mainProductPage-imageBox img {
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* 이미지 비율을 유지하면서 카드에 맞게 조정 */
+  margin-bottom: 10px;
+}
+.mainProductPage-itemBox {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+}
+.mainProductPage-itemBox-itemList{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.product {
+  background-color: #fff;
+  border: none;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-grow: 1; /* 세로 방향으로 공간을 채우도록 설정 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 내부 요소들을 세로 방향으로 균등하게 배치 */
+}
+.product:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+.product img:hover {
+  transform: scale(1.1);
+}
+
+.product h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.product p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.product input[type="number"] {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.product button {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.product button:hover {
+  background-color: #218838;
+}
+
+.add-cart-btn{
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  width:50%;
+  margin:auto;
+}

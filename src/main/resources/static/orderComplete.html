@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="/css/orderComplete.css">
   <title>주문 내역</title>
   <style>
     .orderDetail {
@@ -10,6 +11,7 @@
   </style>
 </head>
 <body>
+<div id="nav-container"></div>
 <h2>주문 내역</h2>
 <div id="orderList"></div>
 
@@ -143,8 +145,7 @@
     })
   .catch(error => alert('주문 결제 중 오류 발생: ' + error.message));
   }
-
-
 </script>
+<script src="js/common.js"></script>
 </body>
 </html>

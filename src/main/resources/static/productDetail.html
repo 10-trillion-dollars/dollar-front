@@ -55,6 +55,9 @@
 </div>
 </div>
 <script>
+  const product_url = 'https://product.10-trillon-dollars.com/';
+  const order_url = 'https://order.10-trillon-dollars.com/';
+  const review_url = 'https://review.10-trillon-dollars.com/';
   let currentProduct = {}; // 전역 변수로 현재 상품 정보 저장
   let productNumber;
   document.addEventListener('DOMContentLoaded', function () {
@@ -73,7 +76,7 @@
   });
 
   function fetchProductDetail(productId) {
-    return fetch(`http://localhost:8083/products/${productId}`) // 상품 상세 정보 조회 API 엔드포인트
+    return fetch(product_url + `products/${productId}`) // 상품 상세 정보 조회 API 엔드포인트
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -108,7 +111,7 @@
     };
 
     const token = getTokenFromCookie();
-    fetch(`http://localhost:8085/products/${productNumber}/reviews`, {
+    fetch(review_url + `products/${productNumber}/reviews`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -132,7 +135,7 @@
     });
   });
   function fetchReviews(productId) {
-    fetch(`http://localhost:8085/products/${productId}/reviews`)
+    fetch(review_url + `products/${productId}/reviews`)
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');

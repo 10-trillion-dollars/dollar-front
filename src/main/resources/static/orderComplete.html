@@ -16,12 +16,15 @@
 <div id="orderList"></div>
 
 <script>
+  const order_url = 'https://order.10-trillon-dollars.com/';
+
+
   document.addEventListener('DOMContentLoaded', function() {
     fetchOrderList(); // 주문 목록을 가져오는 함수 호출
   });
 
   function fetchOrderList() {
-    fetch('http://localhost:8084/order/userorder', {
+    fetch(order_url + 'order/userorder', {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -72,7 +75,7 @@
 
   function fetchOrderDetail(orderId, orderDetail) {
     // 주문 상세 정보를 가져오는 fetch 호출
-    fetch(`http://localhost:8084/order/${orderId}`, {
+    fetch(order_url + `order/${orderId}`, {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -102,7 +105,7 @@
 
   function payForOrder(orderId) {
     // 결제하기 fetch 호출
-    fetch(`http://localhost:8084/payment/ready/` + orderId, {
+    fetch(order_url + `payment/ready/` + orderId, {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {

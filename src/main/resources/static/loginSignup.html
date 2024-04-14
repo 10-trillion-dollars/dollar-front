@@ -42,6 +42,8 @@
 </form>
 
 <script>
+  const user_url =  'https://user.10-trillon-dollars.com/';
+
   function submitSignupForm() {
     const email = document.getElementById('signupEmail').value;
     const username = document.getElementById('signupUsername').value;
@@ -57,7 +59,7 @@
       adminToken: adminToken
     };
 
-    fetch('http://localhost:8082/users/signup', {
+    fetch(user_url + 'users/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -90,7 +92,7 @@
       password: password
     };
 
-    fetch('http://localhost:8082/users/login', {
+    fetch(user_url + 'users/login', {
       method: 'POST',
       credentials: 'include',
       headers: {

@@ -36,6 +36,9 @@
 <button onclick="withdraw()">회원 탈퇴</button>
 </div>
 <script>
+
+  const user_url =  'https://user.10-trillon-dollars.com/';
+
   function withdraw() {
     const confirmWithdraw = confirm('정말 회원 탈퇴하시겠습니까?');
     if (confirmWithdraw) {
@@ -43,7 +46,7 @@
       if (password) {
         const confirmPassword = prompt('패스워드를 다시 입력하세요:');
         if (confirmPassword === password) {
-          fetch('http://localhost:8082/users/withdraw', {
+          fetch(user_url + 'users/withdraw', {
             method: 'DELETE',
             credentials: 'include', // 쿠키 포함
             headers: {
@@ -74,7 +77,7 @@
 
 
   function fetchProfile() {
-    fetch('http://localhost:8082/users/profile', {
+    fetch(user_url + 'users/profile', {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -97,7 +100,7 @@
       console.error('Error:', error);
     });
 
-    fetch('http://localhost:8082/users/address', {
+    fetch(user_url + 'users/address', {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -170,7 +173,7 @@
     const newVillage = prompt('새로운 마을을 입력하세요:');
     const newProvince = prompt('새로운 도를 입력하세요:');
     if (newCity && newVillage && newProvince) {
-      fetch('http://localhost:8082/users/address', {
+      fetch(user_url + 'users/address', {
         method: 'POST',
         credentials: 'include', // 쿠키 포함
         headers: {
@@ -201,7 +204,7 @@
     const newVillage = prompt('새로운 마을을 입력하세요:');
     const newProvince = prompt('새로운 도를 입력하세요:');
     if (newCity && newVillage && newProvince) {
-      fetch('http://localhost:8082/users/address/' + address.id, {
+      fetch(user_url + 'users/address/' + address.id, {
         method: 'PUT',
         credentials: 'include', // 쿠키 포함
         headers: {
@@ -230,7 +233,7 @@
   function deleteAddress(address) {
     const confirmDelete = confirm(`주소 '${address}'를 삭제하시겠습니까?`);
     if (confirmDelete) {
-      fetch('http://localhost:8082/users/address/' + address.id, {
+      fetch(user_url + 'users/address/' + address.id, {
         method: 'DELETE',
         credentials: 'include', // 쿠키 포함
         headers: {
@@ -254,7 +257,7 @@
   function changeUsername() {
     const newUsername = prompt('새로운 유저이름을 입력하세요:');
     if (newUsername) {
-      fetch('http://localhost:8082/users/username', {
+      fetch(user_url + 'users/username', {
         method: 'PUT',
         credentials: 'include', // 쿠키 포함
         headers: {
@@ -283,7 +286,7 @@
       if (newPassword) {
         const confirmPassword = prompt('새로운 패스워드를 다시 입력하세요:');
         if (newPassword === confirmPassword) {
-          fetch('http://localhost:8082/users/password', {
+          fetch(user_url + 'users/password', {
             method: 'PUT',
             credentials: 'include', // 쿠키 포함
             headers: {

@@ -18,6 +18,9 @@
 
 
 <script>
+  const user_url =  'https://user.10-trillon-dollars.com/';
+  const order_url = 'https://order.10-trillon-dollars.com/';
+
   document.addEventListener('DOMContentLoaded', function() {
     displayCartItems();
 
@@ -90,7 +93,7 @@
     console.log(orderRequest);
 
     // 서버에 주문 요청을 보내는 fetch API 호출
-    fetch('http://localhost:8084/order', {
+    fetch(order_url + 'order', {
       method: 'POST',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -141,7 +144,7 @@
 
   function fetchAddresses() {
     // 주소 목록을 가져오는 서버의 엔드포인트 예시: '/api/addresses'
-    fetch('http://localhost:8082/users/address', {
+    fetch(user_url + 'users/address', {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {

@@ -21,7 +21,7 @@
   });
 
   function fetchOrderList() {
-    fetch('http://localhost:8080/order/userorder', {
+    fetch('http://localhost:8084/order/userorder', {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -72,7 +72,7 @@
 
   function fetchOrderDetail(orderId, orderDetail) {
     // 주문 상세 정보를 가져오는 fetch 호출
-    fetch(`http://localhost:8080/order/${orderId}`, {
+    fetch(`http://localhost:8084/order/${orderId}`, {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -102,7 +102,7 @@
 
   function payForOrder(orderId) {
     // 결제하기 fetch 호출
-    fetch(`http://localhost:8080/payment/ready/` + orderId, {
+    fetch(`http://localhost:8084/payment/ready/` + orderId, {
       method: 'GET',
       credentials: 'include', // 쿠키 포함
       headers: {

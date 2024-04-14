@@ -11,35 +11,16 @@
 <div id="productList">상품 목록이 여기에 표시됩니다.</div>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-     fetchProducts();
-   });
-
-
-  function fetchProducts() {
-    fetch('http://localhost:8080/products',{
-      method: 'GET'
-    })
-    .then(response => response.json())
-    .then(products => displayProducts(products))
-    .catch(error => console.error('Error:', error));
-  }
-
-  function fetchProductImage(productId) {
-    // S3에서 이미지를 가져오는 요청을 보냅니다.
-    return fetch(`http://localhost:8080/` + productId)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch product image');
-      }
-      return response.blob();
-    })
-    .then(blob => URL.createObjectURL(blob))
-    .catch(error => {
-      console.error('Error fetching product image:', error);
-      return null;
-    });
-  }
-
+    const searchParams = new URLSearchParams(window.location.search);
+    const searchQuery = searchParams.get('search');
+    if (searchQuery) {
+      // 검색어로 검색 결과 처리
+      fetchSearchProducts(searchQuery);
+    } else {
+      // 일반 상품 목록 표시
+      fetchProducts();
+    }
+  });
 
   function displayProducts(products) {
     const productList = document.getElementById('productList');
@@ -50,10 +31,11 @@
       productElement.classList.add("mainProductPage");
       productElement.innerHTML = `
             <div class="mainProductPage-imageBox">
-            <img src="images/TIL.jpeg" alt="${product.name}" style="cursor:pointer;" onclick="window.location.href = 'productDetail.html?productId=${product.id}'">
+            <!--<img src="images/TIL.jpeg" alt="${product.name}" style="cursor:pointer;" onclick="window.location.href = 'productDetail.html?productId=${product.id}'">-->
+            <img src="${product.imageUrl}" alt="${product.name}"onclick="window.location.href = 'productDetail.html?productId=${product.id}'">
             </div>
             <div class="mainProductPage-itemBox">
-                <!--<img src="${product.imageUrl}" alt="${product.name}" style="cursor:pointer;width:100px;height:auto;" onclick="window.location.href = 'productDetail.html?productId=${product.id}'">-->
+
                 <h3>상품명: ${product.name}</h3>
                 <p>가격: ${product.price}원</p>
                 <div class="mainProductPage-itemBox-itemList">
@@ -70,6 +52,32 @@
         const quantity = productElement.querySelector('.quantity').value;
         addToCart(product, quantity);
       });
+    });
+  }
+
+
+  function fetchProducts() {
+    fetch('http://localhost:8083/products',{
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(products => displayProducts(products))
+    .catch(error => console.error('Error:', error));
+  }
+
+  function fetchProductImage(productId) {
+    // S3에서 이미지를 가져오는 요청을 보냅니다.
+    return fetch(`http://localhost:8083/` + productId)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch product image');
+      }
+      return response.blob();
+    })
+    .then(blob => URL.createObjectURL(blob))
+    .catch(error => {
+      console.error('Error fetching product image:', error);
+      return null;
     });
   }
 

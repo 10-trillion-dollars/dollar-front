@@ -92,3 +92,10 @@ header {
   cursor: pointer;
   margin-right: 10px;
 }
+.icons {
+  font-size: 25px;
+  display:flex;
+  grid-gap: 20px;
+}
+
+

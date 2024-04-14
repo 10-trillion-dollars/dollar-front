@@ -9,9 +9,10 @@
 <div id="nav-container"></div>
 <div id="productDetail">
   <div class="productDetailImage">
-    <img id="productImage" src="/images/TIL.jpeg" alt="상품 이미지">
+    <!--<img id="productImage" src="/images/TIL.jpeg" alt="상품 이미지">-->
+    <img id="productImage" src="" alt="상품 이미지" style="width: 300px;">
   </div>
-<!--  <img id="productImage" src="" alt="상품 이미지" style="width: 300px;">-->
+
   <div class="productDetailItem">
   <h2 id="productName"></h2>
   <p id="productPrice"></p>
@@ -29,6 +30,7 @@
 
   <div id="reviewSection">
     <h2>상품 리뷰</h2>
+
     <div class="reviewForm">
       <form id="reviewForm">
         <div class="formGroup">
@@ -71,7 +73,7 @@
   });
 
   function fetchProductDetail(productId) {
-    return fetch(`http://localhost:8080/products/${productId}`) // 상품 상세 정보 조회 API 엔드포인트
+    return fetch(`http://localhost:8083/products/${productId}`) // 상품 상세 정보 조회 API 엔드포인트
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -82,7 +84,7 @@
       console.log(product);
 
       document.getElementById('productName').textContent = `상품명: ${product.name}`;
-      // document.getElementById('productImage').src = product.imageUrl;
+      document.getElementById('productImage').src = `${product.imageUrl}`;
       document.getElementById('productPrice').textContent = `가격: ${product.price}원`;
       document.getElementById('productDescription').textContent = `설명: ${product.description}`;
       document.getElementById('productStock').textContent = `재고: ${product.stock}개`;
@@ -98,14 +100,15 @@
 
     const reviewContent = document.getElementById('reviewContent').value;
     const reviewScore = parseInt(document.getElementById('reviewScore').value, 10);
-
+    const reviewImageFile = document.getElementById('reviewImage').files[0];
     const reviewData = {
       content: reviewContent,
-      score: reviewScore
+      score: reviewScore,
+      image: reviewImageFile
     };
 
     const token = getTokenFromCookie();
-    fetch(`http://localhost:8080/products/${productNumber}/reviews`, {
+    fetch(`http://localhost:8085/products/${productNumber}/reviews`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -117,7 +120,7 @@
     .then(response => {
       if (response.ok) {
         alert('리뷰가 성공적으로 등록되었습니다.');
-        fetchReviews(productId); // 리뷰 목록을 다시 불러옴
+        fetchReviews(productNumber); // 리뷰 목록을 다시 불러옴
         document.getElementById('reviewForm').reset(); // 폼 초기화
       } else {
         alert('리뷰 등록에 실패했습니다.');
@@ -129,7 +132,7 @@
     });
   });
   function fetchReviews(productId) {
-    fetch(`http://localhost:8080/products/${productId}/reviews`)
+    fetch(`http://localhost:8085/products/${productId}/reviews`)
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -151,7 +154,7 @@
         const scoreSpan = document.createElement('span');
         const contentSpan = document.createElement('span');
 
-        photoImg.src = review.photo;
+        photoImg.src = review.imageUrl;
         photoImg.alt = '리뷰 사진';
         photoImg.style.width = '100px'; // 이미지 크기 조정
         contentDiv.appendChild(photoImg);
@@ -193,7 +196,7 @@
     } else {
       cart.push({
         name: product.name,
-        photo: product.photo,
+        photo: product.imageUrl,
         price: product.price,
         productId: product.id,
         quantity: quantity,

@@ -11,7 +11,15 @@ function getTokenFromCookie() {
   }
   return null;
 }
-
+// 토큰에서 role 정보 추출하는 함수
+function getRoleFromToken(token) {
+  // 토큰 디코딩 로직 구현
+  // 예시로 JWT 토큰을 디코딩하는 방법을 사용
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const decodedToken = JSON.parse(atob(base64));
+  return decodedToken.role;
+}
 document.addEventListener('DOMContentLoaded', function() {
   fetch('/components/header.html')
   .then(response => response.text())
@@ -40,14 +48,23 @@ function bindHeaderEvents() {
       fetchSearchProducts(searchQuery); // 검색 함수를 호출합니다.
     });
   }
+  // 검색 폼 제출 이벤트 바인딩
+  const searchForm = document.getElementById('searchForm');
+  if (searchForm) {
+    searchForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // 폼 제출 기본 동작 방지
+      const searchQuery = document.getElementById('searchBox').value;
+      window.location.href = `/index.html?search=${encodeURIComponent(searchQuery)}`;
+    });
+  }
 
   // 토큰 체크
   checkToken();
 }
 
-// 검색 함수
+
 function fetchSearchProducts(query) {
-  fetch(`http://localhost:8080/products/search?search=${query}`)
+  fetch(`http://localhost:8083/products/search?search=${query}`)
   .then(response => response.json())
   .then(products => displayProducts(products))
   .catch(error => console.error('Error:', error));
@@ -64,7 +81,7 @@ function checkToken() {
      <button id="orderPage">주문내역</button>
      <button id="logout">로그아웃</button>
    `;
-
+    const role = getRoleFromToken(token);
     // 마이페이지 이벤트 리스너
     document.getElementById('myPage').addEventListener('click', function() {
       window.location.href = 'myPage.html';
@@ -81,6 +98,15 @@ function checkToken() {
       alert('로그아웃 되었습니다.');
       window.location.reload();
     });
+    if (role === 'SELLER') {
+      // 사용자의 role이 'SELLER'인 경우 관리자 페이지 버튼 추가
+      const adminButton = document.createElement('button');
+      adminButton.textContent = '관리자 페이지';
+      adminButton.addEventListener('click', function() {
+        window.location.href = 'adminDashboard.html'; // 관리자 페이지로 이동하는 URL로 변경해야 함
+      });
+      authButtons.appendChild(adminButton);
+    }
   } else {
     // 토큰이 없을 경우
     authButtons.innerHTML = `
@@ -102,6 +128,7 @@ function addToCart(product, quantity) {
   if (productIndex !== -1) {
     // 상품이 이미 있으면, 수량만 업데이트
     cart[productIndex].quantity += parseInt(quantity, 10);
+    console.log("Updated quantity:", cart[productIndex]);
   } else {
     // 상품이 장바구니에 없으면, 상품 정보와 함께 추가
     cart.push({
@@ -109,7 +136,7 @@ function addToCart(product, quantity) {
       name: product.name,
       price: product.price,
       quantity: parseInt(quantity, 10),
-      photo: product.photo
+      imageUrl: product.imageUrl
     });
   }
 

@@ -113,8 +113,6 @@ function checkToken() {
       // document.cookie.split(";").forEach(function(c) {
       //   document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;");
       // });
-      alert('로그아웃 되었습니다.');
-      window.location.reload();
     });
     if (role === 'SELLER') {
       // 사용자의 role이 'SELLER'인 경우 관리자 페이지 버튼 추가

@@ -94,7 +94,7 @@ function checkToken() {
 
     // 로그아웃 버튼 이벤트 리스너
     document.getElementById('logout').addEventListener('click', function() {
-      document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'Authorization; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; max-age=-1;';
       alert('로그아웃 되었습니다.');
       window.location.reload();
     });

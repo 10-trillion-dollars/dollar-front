@@ -94,9 +94,25 @@ function checkToken() {
 
     // 로그아웃 버튼 이벤트 리스너
     document.getElementById('logout').addEventListener('click', function() {
-      document.cookie.split(";").forEach(function(c) {
-        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;");
+      fetch('https://user.10-trillon-dollars.com/users/logout', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          alert('로그아웃 되었습니다.');
+          window.location.reload();
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
       });
+      // document.cookie.split(";").forEach(function(c) {
+      //   document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;");
+      // });
       alert('로그아웃 되었습니다.');
       window.location.reload();
     });

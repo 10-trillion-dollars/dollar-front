@@ -301,7 +301,7 @@
     const formData = new FormData();
     formData.append('file', imageFile);
 
-    fetch(` https://product.10-trillon-dollars.com/admin/products/${productId}/image`, {
+    fetch(`https://product.10-trillon-dollars.com/admin/products/${productId}/image`, {
       method: 'POST',
       credentials: 'include',
       body: formData
@@ -319,7 +319,7 @@
 
   function fetchProductImage() {
     const productId = document.getElementById('productIdView').value;
-    fetch(` https://product.10-trillon-dollars.com/products/${productId}/image`, {
+    fetch(`https://product.10-trillon-dollars.com/products/${productId}/image`, {
       method: 'GET',
       credentials: 'include'
     })

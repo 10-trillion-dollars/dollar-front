@@ -124,7 +124,7 @@
 
 
   function updateQuantity(index, change) {
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
     if (index >= 0 && index < cartItems.length) {
       // 수량 변경
       cartItems[index].quantity += change;
@@ -135,7 +135,7 @@
       }
 
       // 변경된 장바구니 정보를 로컬 스토리지에 저장
-      localStorage.setItem('cart', JSON.stringify(cartItems));
+      sessionStorage.setItem('cart', JSON.stringify(cartItems));
 
       // 장바구니 UI를 업데이트
       displayCartItems();

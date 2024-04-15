@@ -122,7 +122,7 @@ function checkToken() {
 
 // 장바구니 함수
 function addToCart(product, quantity) {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
   const productIndex = cart.findIndex(item => item.productId === product.id);
 
   if (productIndex !== -1) {
@@ -141,6 +141,6 @@ function addToCart(product, quantity) {
   }
 
   // 변경된 장바구니 데이터를 로컬 스토리지에 저장
-  localStorage.setItem('cart', JSON.stringify(cart));
+  sessionStorage.setItem('cart', JSON.stringify(cart));
   alert('장바구니에 상품이 추가되었습니다!');
 }

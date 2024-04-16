@@ -17,6 +17,8 @@
 
 <script>
   const order_url = 'https://order.10-trillon-dollars.com/';
+  // const order_url = 'http://localhost:8084/';
+
 
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -91,7 +93,8 @@
           <p>상품 ID: ${product.productId}</p>
           <p>상품 이름: ${product.productName}</p>
           <p>수량: ${product.quantity}</p>
-          <p>주문 상태: ${product.state}</p>
+          <p>단가: ${product.price}</p>
+          <p>총 가격: ${product.totalPrice}</p>
           <hr>
         `;
         });

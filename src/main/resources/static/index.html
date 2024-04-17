@@ -10,7 +10,7 @@
 <!--<button id="adminDashboard">관리자 페이지</button>-->
 <div id="productList">상품 목록이 여기에 표시됩니다.</div>
 <script>
-  const product_url = 'https://product.10-trillon-dollars.com/';
+  const product_url = 'http://localhost:8083/';
 
   document.addEventListener('DOMContentLoaded', function() {
     const searchParams = new URLSearchParams(window.location.search);
@@ -29,6 +29,7 @@
     productList.innerHTML = '';
 
     products.forEach(product => {
+      //fetchProductImage(product.id)
       const productElement = document.createElement('div');
       productElement.classList.add("mainProductPage");
       productElement.innerHTML = `

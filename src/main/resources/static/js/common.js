@@ -64,7 +64,7 @@ function bindHeaderEvents() {
 
 
 function fetchSearchProducts(query) {
-  fetch(`https://product.10-trillon-dollars.com/products/search?search=${query}`)
+  fetch(`http://localhost:8083/products/search?search=${query}`)
   .then(response => response.json())
   .then(products => displayProducts(products))
   .catch(error => console.error('Error:', error));

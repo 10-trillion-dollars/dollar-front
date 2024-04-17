@@ -52,12 +52,35 @@
     </div>
     <ul id="reviewList"></ul>
   </div>
+  <!-- 리뷰 업데이트 폼 (초기에는 숨김) -->
+  <div id="updateReviewForm" style="display: none;">
+    <h3>리뷰 수정</h3>
+    <form>
+      <label for="updateContent">리뷰 내용:</label>
+      <textarea id="updateContent" rows="4" required></textarea>
+      <label for="updateScore">평점:</label>
+      <select id="updateScore" required>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <button type="button" id="updateSubmit">수정 완료</button>
+    </form>
+  </div>
 </div>
 </div>
 <script>
-  const product_url = 'https://product.10-trillon-dollars.com/';
-  const order_url = 'https://order.10-trillon-dollars.com/';
-  const review_url = 'https://review.10-trillon-dollars.com/';
+  // const product_url = 'https://product.10-trillon-dollars.com/';
+  // const order_url = 'https://order.10-trillon-dollars.com/';
+  // const review_url = 'https://review.10-trillon-dollars.com/';
+  const product_url = 'http://localhost:8083/';
+  const order_url = 'http://localhost:8084/';
+  const review_url = 'http://localhost:8085/';
+  document.getElementById('updateSubmit').addEventListener('click', submitUpdateReview);
+
+
   let currentProduct = {}; // 전역 변수로 현재 상품 정보 저장
   let productNumber;
   document.addEventListener('DOMContentLoaded', function () {
@@ -87,7 +110,7 @@
       console.log(product);
 
       document.getElementById('productName').textContent = `상품명: ${product.name}`;
-      document.getElementById('productImage').src = `${product.imageUrl}`;
+      //document.getElementById('productImage').src = `${product.imageUrl}`;
       document.getElementById('productPrice').textContent = `가격: ${product.price}원`;
       document.getElementById('productDescription').textContent = `설명: ${product.description}`;
       document.getElementById('productStock').textContent = `재고: ${product.stock}개`;
@@ -100,14 +123,13 @@
   }
   document.getElementById('reviewForm').addEventListener('submit', function (event) {
     event.preventDefault();
-
     const reviewContent = document.getElementById('reviewContent').value;
     const reviewScore = parseInt(document.getElementById('reviewScore').value, 10);
-    const reviewImageFile = document.getElementById('reviewImage').files[0];
+    //const reviewImageFile = document.getElementById('reviewImage').files[0];
     const reviewData = {
       content: reviewContent,
       score: reviewScore,
-      image: reviewImageFile
+      //image: reviewImageFile
     };
 
     const token = getTokenFromCookie();
@@ -153,16 +175,23 @@
         const listItem = document.createElement('li');
         // 리뷰 항목을 생성하고 내용을 추가합니다.
         const contentDiv = document.createElement('div');
-        const photoImg = document.createElement('img');
+        //const photoImg = document.createElement('img');
         const scoreSpan = document.createElement('span');
         const contentSpan = document.createElement('span');
+        // 삭제 버튼
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '삭제';
+        deleteButton.addEventListener('click', () => deleteReview(review.id, review.userId, productId));
+        // 업데이트 버튼
+        const updateButton = document.createElement('button');
+        updateButton.textContent = '수정';
+        updateButton.addEventListener('click', () => showUpdateForm(review.id, review.userId, productId, review));
 
-        photoImg.src = review.imageUrl;
-        photoImg.alt = '리뷰 사진';
-        photoImg.style.width = '100px'; // 이미지 크기 조정
-        contentDiv.appendChild(photoImg);
-        contentDiv.appendChild(document.createElement('br')); // 줄바꿈
-
+        //photoImg.src = review.imageUrl;
+        //photoImg.alt = '리뷰 사진';
+        //photoImg.style.width = '100px'; // 이미지 크기 조정
+        //contentDiv.appendChild(photoImg);
+        //contentDiv.appendChild(document.createElement('br')); // 줄바꿈
         scoreSpan.textContent = `점수: ${review.score}`;
         totalScore += review.score; // 리뷰의 점수를 더합니다.
         contentDiv.appendChild(scoreSpan);
@@ -170,6 +199,9 @@
 
         contentSpan.textContent = review.content;
         contentDiv.appendChild(contentSpan);
+
+        contentDiv.appendChild(deleteButton);
+        contentDiv.appendChild(updateButton);
 
         listItem.appendChild(contentDiv);
         reviewList.appendChild(listItem);
@@ -183,7 +215,6 @@
         reviewList.parentNode.insertBefore(averageScoreP, reviewList); // 리뷰 목록 앞에 추가
       }
     })
-
 
     .catch(error => {
       console.error('Error fetching reviews:', error);
@@ -209,7 +240,75 @@
     sessionStorage.setItem('cart', JSON.stringify(cart));
     alert('장바구니에 상품이 추가되었습니다!');
   }
+  //리뷰 삭제 메서드
+  function deleteReview(reviewId, userId, productId) {
+    fetch(review_url + `products/${productId}/reviews/${reviewId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      if (response.ok) {
+        alert('리뷰가 성공적으로 삭제되었습니다.');
+        location.reload(); // 페이지를 새로 고침
+      } else {
+        alert('리뷰 삭제에 실패했습니다.');
+      }
+    }).catch(error => {
+      console.error('Error deleting review:', error);
+      alert('리뷰 삭제 중 오류가 발생했습니다.');
+    });
+  }
+  function showUpdateForm(reviewId, userId, productId, review) {
+    // 폼 요소에 접근
+    const updateForm = document.getElementById('updateReviewForm');
+    const updateContent = document.getElementById('updateContent');
+    const updateScore = document.getElementById('updateScore');
 
+    // 현재 리뷰 내용과 평점을 폼 필드에 채워넣기
+    updateContent.value = review.content;
+    updateScore.value = review.score;
+
+    // 업데이트 폼에 현재 리뷰 ID와 제품 ID를 저장해두기 (후에 수정 요청 시 사용)
+    updateForm.setAttribute('data-review-id', reviewId);
+    updateForm.setAttribute('data-product-id', productId);
+
+    // 폼 보이기
+    updateForm.style.display = 'block';
+  }
+  function submitUpdateReview() {
+    const updateForm = document.getElementById('updateReviewForm');
+    const reviewId = updateForm.getAttribute('data-review-id');
+    const productId = updateForm.getAttribute('data-product-id');
+    const content = document.getElementById('updateContent').value;
+    const score = document.getElementById('updateScore').value;
+
+    // API 엔드포인트로 PUT 요청 보내기
+    fetch(review_url + `products/${productId}/reviews/${reviewId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content: content, score: score })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok'); // 네트워크 응답 오류 시 예외 발생
+      }
+    })
+    .then(()=> {
+        alert('리뷰가 성공적으로 업데이트되었습니다.');
+        location.reload(); // 페이지를 새로 고침
+    })
+    .catch(error => {
+      console.error('Error updating review:', error);
+      alert('리뷰 수정 중 오류가 발생했습니다.'); // 오류 처리
+    });
+    // 폼 숨기기
+    updateForm.style.display = 'none';
+  }
 </script>
 <script src="/js/common.js"></script>
 </body>

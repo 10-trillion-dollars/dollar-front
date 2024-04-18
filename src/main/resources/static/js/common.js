@@ -102,7 +102,7 @@ function checkToken() {
         }
       })
       .then(response => {
-        if (!response.ok) {
+        if (response.ok) {
           alert('로그아웃 되었습니다.');
           window.location.reload();
         }

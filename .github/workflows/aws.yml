@@ -43,7 +43,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |

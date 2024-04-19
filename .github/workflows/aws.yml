@@ -25,7 +25,7 @@ jobs:
         
       # Docker 이미지 빌드
       - name: docker image build
-        run: docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKERHUB_USERNAME }} --push .
+        run: docker build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKERHUB_USERNAME }} --push .
         
       # DockerHub 로그인
       - name: docker login

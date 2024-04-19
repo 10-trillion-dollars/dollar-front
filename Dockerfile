@@ -1,8 +1,8 @@
 # Dockerfile
 
 # jdk17 Image Start
-FROM openjdk:17
-FROM --platform=linux/arm64/v8 jw059/front
+FROM arm64v8/openjdk:17
+
 
 # 인자 설정 - JAR_File
 ARG JAR_FILE=build/libs/*.jar

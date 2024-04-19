@@ -48,5 +48,5 @@ jobs:
           port: 22
           script: |
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/front
-            sudo docker run -d -p 8081:8081 ${{ secrets.DOCKERHUB_USERNAME }}/front
+            sudo docker run --platform linux/amd64 -d -p 8081:8081 ${{ secrets.DOCKERHUB_USERNAME }}/front
             sudo docker image prune -f

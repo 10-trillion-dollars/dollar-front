@@ -95,7 +95,7 @@ function checkToken() {
 
     // 로그아웃 버튼 이벤트 리스너
     document.getElementById('logout').addEventListener('click', function() {
-      fetch('https://user.10-trillon-dollars.com/users/logout', {
+      fetch('https://user.10-trillion-dollars.shop/users/logout', {
         method: 'DELETE',
         credentials: 'include',
         headers: {

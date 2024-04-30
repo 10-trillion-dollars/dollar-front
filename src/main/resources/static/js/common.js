@@ -64,11 +64,12 @@ function bindHeaderEvents() {
 
 
 function fetchSearchProducts(query) {
-  fetch(`https://product.10-trillon-dollars.com/products/search?search=${query}`)
+  fetch(`${product_url}products/search?search=${query}&page=${currentPage - 1}&size=12`)
   .then(response => response.json())
   .then(products => displayProducts(products))
   .catch(error => console.error('Error:', error));
 }
+
 
 // 로그인 로그아웃 토큰 체크
 function checkToken() {
@@ -94,7 +95,7 @@ function checkToken() {
 
     // 로그아웃 버튼 이벤트 리스너
     document.getElementById('logout').addEventListener('click', function() {
-      fetch('https://user.10-trillon-dollars.com/users/logout', {
+      fetch('https://user.10-trillion-dollars.shop/users/logout', {
         method: 'DELETE',
         credentials: 'include',
         headers: {

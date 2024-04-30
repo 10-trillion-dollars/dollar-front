@@ -9,17 +9,27 @@
 <div id="nav-container"></div>
 <!--<button id="adminDashboard">관리자 페이지</button>-->
 <div id="productList">상품 목록이 여기에 표시됩니다.</div>
+<div id="pagination">
+  <button id="prevPage">이전 페이지</button>
+  <span id="currentPage">1</span>
+  <button id="nextPage">다음 페이지</button>
+</div>
+
 <script>
-  const product_url = 'https://product.10-trillon-dollars.com/';
+  const product_url = 'https://product.10-trillion-dollars.shop/';
   // const product_url = 'http://localhost:8083/';
+  let currentPage = 1; // 현재 페이지 번호 초기화
+  let currentSearchQuery = null; // 현재 검색 쿼리를 저장하는 변수
 
 
+
+  // 검색 쿼리를 전역 변수로 저장
   document.addEventListener('DOMContentLoaded', function() {
     const searchParams = new URLSearchParams(window.location.search);
-    const searchQuery = searchParams.get('search');
-    if (searchQuery) {
+    currentSearchQuery = searchParams.get('search'); // 이 부분 추가
+    if (currentSearchQuery) {
       // 검색어로 검색 결과 처리
-      fetchSearchProducts(searchQuery);
+      fetchSearchProducts(currentSearchQuery);
     } else {
       // 일반 상품 목록 표시
       fetchProducts();
@@ -61,13 +71,36 @@
 
 
   function fetchProducts() {
-    fetch(product_url + 'products',{
+    fetch(`${product_url}products?page=${currentPage - 1}&size=12`,{
       method: 'GET'
     })
     .then(response => response.json())
     .then(products => displayProducts(products))
     .catch(error => console.error('Error:', error));
   }
+
+  document.getElementById('nextPage').addEventListener('click', () => {
+    currentPage += 1;
+    if (currentSearchQuery) {
+      fetchSearchProducts(currentSearchQuery); // 검색 결과에 대한 페이지 처리
+    } else {
+      fetchProducts(); // 일반 상품 목록에 대한 페이지 처리
+    }
+    document.getElementById('currentPage').innerText = currentPage;
+  });
+
+  document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage -= 1;
+      if (currentSearchQuery) {
+        fetchSearchProducts(currentSearchQuery); // 검색 결과에 대한 페이지 처리
+      } else {
+        fetchProducts(); // 일반 상품 목록에 대한 페이지 처리
+      }
+      document.getElementById('currentPage').innerText = currentPage;
+    }
+  });
+
 
   function fetchProductImage(productId) {
     // S3에서 이미지를 가져오는 요청을 보냅니다.
